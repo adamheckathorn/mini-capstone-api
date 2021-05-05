@@ -5,7 +5,7 @@ class ProductsController < ApplicationController
   end
 
   def all_product_method
-    product = Product.all
+    products = Product.all
     render json: product.as_json
   end
 end
