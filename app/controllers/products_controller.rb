@@ -1,26 +1,44 @@
 class ProductsController < ApplicationController
-  def one_product_method
-    one_product = Product.find_by(id: params["id"])
-    render json: one_product.as_json
-  end
-
-  def all_products_method
-    products = Product.all
-    render json: product.as_json
-  end
-
-  def url_segment_params
-    product = Product.something
-    render json: product.as_json
-  end
-
   def index
-    product = Product.all
-    render json: product.as_json
+    products = Product.all
+    render json: products
+  end
+
+  def create
+    product = Product.new(
+      name: params[:name],
+      price: params[:price],
+      description: params[:description],
+      supplier_id: params[:supplier_id],
+    )
+    if product.save
+      Image.create(product_id: product.id, url: params[:image_url])
+      render json: product
+    else
+      render json: { errors: product.errors.full_messages }, status: 422
+    end
   end
 
   def show
     product = Product.find_by(id: params[:id])
-    render json: product.as_json
+    render json: product
+  end
+
+  def update
+    product = Product.find_by(id: params[:id])
+    product.name = params[:name] || product.name
+    product.price = params[:price] || product.price
+    product.description = params[:description] || product.description
+    if product.save
+      render json: product
+    else
+      render json: { errors: product.errors.full_messages }, status: 422
+    end
+  end
+
+  def destroy
+    product = Product.find_by(id: params[:id])
+    product.destroy
+    render json: { message: "Product destroyed successfully!" }
   end
 end
